@@ -1,0 +1,33 @@
+version: '3'
+networks:
+  bored-again:
+    external: true
+
+volumes:
+  bored-again-postgres:
+    external: true
+
+services:
+  postgres:
+    container_name: bored-again-postgres
+    working_dir: /usr/src/app
+    image: postgres:13
+    env_file: env/docker/.env
+    volumes:
+      - ./:/usr/src/app:ro
+      - bored-again-postgres:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+    networks:
+      - bored-again
+
+  clojure:
+    image: clojure:lein
+    command: "lein run"
+    working_dir: "/usr/src/app"
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - 3000:3000
+    networks:
+      - bored-again
