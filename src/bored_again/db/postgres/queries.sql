@@ -26,7 +26,7 @@ SELECT
 	t.name AS tag_name,
 	t.slug AS tag_slug,
 	t.id AS tag_id,
-	row_number() OVER (PARTITION BY extract(year from p.created_at) ORDER BY mvp.position ASC, p.created_at DESC, p.id DESC) <= constant.max_top_posts AS is_top
+	row_number() OVER (PARTITION BY extract(year from p.created_at) ORDER BY mvp.position ASC, p.created_at DESC, p.id DESC) <= constant.max_top_posts() AS is_top
 FROM posts AS p
 LEFT JOIN post_tags AS pt ON p.id = pt.post_id
 LEFT JOIN tags AS t ON t.id = pt.tag_id
@@ -50,7 +50,7 @@ FROM posts AS p
 LEFT JOIN post_tags AS pt ON p.id = pt.post_id
 LEFT JOIN tags AS t ON t.id = pt.tag_id
 LEFT JOIN (
-	SELECT p.id, row_number() OVER (PARTITION BY extract(year from p.created_at) ORDER BY mvp.position ASC, p.created_at DESC, p.id DESC) <= constant.max_top_posts AS is_top
+	SELECT p.id, row_number() OVER (PARTITION BY extract(year from p.created_at) ORDER BY mvp.position ASC, p.created_at DESC, p.id DESC) <= constant.max_top_posts() AS is_top
 	FROM posts AS p
 	LEFT JOIN most_visited_posts AS mvp ON mvp.post_id = p.id
 ) AS tp ON tp.id = p.id
